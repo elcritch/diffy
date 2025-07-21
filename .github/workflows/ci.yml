@@ -24,7 +24,7 @@ jobs:
         export PATH="/home/runner/.nimble/bin:$PATH"
         export PATH="/home/runner/.local/share/grabnim/current/bin:$PATH"
 
-        grabnim install 2.2.x
+        grabnim 2.2.x
 
         echo "FIND NIMBLE"
         find /home/runner/.nimble/
