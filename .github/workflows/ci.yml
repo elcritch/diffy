@@ -18,8 +18,7 @@ jobs:
 
     - name: Setup Nim
       run: |
-        wget https://codeberg.org/janAkali/grabnim/raw/branch/master/misc/install.sh
-        sh install.sh
+        curl -sSf https://codeberg.org/janAkali/grabnim/raw/branch/master/misc/install.sh | sh -s
         export PATH="$HOME/.nimble/bin:$PATH"
         export PATH="$HOME/.local/share/grabnim/current/bin:$PATH"
 
