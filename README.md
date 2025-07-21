@@ -15,14 +15,12 @@ A high-performance image comparison and sub-image finding library for Nim, built
 
 Diffy includes hand-optimized SIMD implementations that provide dramatic performance improvements:
 
-| Architecture | Implementation | Performance | Speedup |
-|-------------|---------------|-------------|----------|
-| ARM64 | NEON SIMD | **759ms** | **7.6x faster** |
-| x86-64 | SSE2 SIMD | **976ms** | **5.9x faster** |
-| Any | Scalar fallback | **5835ms** | baseline |
+| Architecture | Implementation | Performance | Baseline | Speedup |
+|-------------|---------------|-------------|-------------|----------|
+| ARM64 | NEON SIMD | **759ms** | **5835ms** | **7.6x faster** |
+| x86-64 | SSE2 SIMD | **1341ms** | **10709ms** | **7.9x faster** |
 
 *Benchmark: Finding a 944×103 UI element in a 1440×2046 screenshot with 1 halving*
-*Note: the x86-64 sse2 version was run on a macbook m3 using rosetta2, it'll likely be faster on a native amd64 machine*
 
 ## Installation
 
