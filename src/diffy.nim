@@ -78,7 +78,6 @@ proc findImg*(
             break search
 
         if scaledY > maxY:
-          trace "Early exit due to maxY", startY = scaledY, maxY = maxY
           break search
         if scaledX > maxX:
           continue

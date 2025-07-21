@@ -11,8 +11,8 @@ import diffy
 
 test "can add":
 
-  let masterImagePath = paramStr(1)
-  let targetImagePath = paramStr(2)
+  let masterImagePath = "tests/master.png"
+  let targetImagePath = "tests/target.png"
 
   let halvingsCount =
     if paramCount() >= 4:
