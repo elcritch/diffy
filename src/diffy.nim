@@ -1,10 +1,11 @@
-import std/strutils
 import pixie
 import pixie/images
 import os
 
 {.push checks: off.}
 {.push stackTrace: off.}
+
+export readImage
 
 proc diffAt*(master, image: Image, startX, startY: int): float32 {.raises: [].} =
   ## Calculates the similarity score between the target image and master image at the given position.

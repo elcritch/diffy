@@ -5,29 +5,17 @@
 #
 # To run these tests, simply execute `nimble test`.
 
+import std/strutils
 import unittest
 
 import diffy
 
-test "can add":
+test "can find":
 
-  let masterImagePath = "tests/master.png"
-  let targetImagePath = "tests/target.png"
+  let masterImagePath = "tests/data/settings.png"
+  let targetImagePath = "tests/data/transfer_button.png"
 
-  let halvingsCount =
-    if paramCount() >= 4:
-      try:
-        parseInt(paramStr(4))
-      except ValueError:
-        echo "Error: Invalid halvings value. Must be a non-negative integer"
-        quit(1)
-    else:
-      0
-
-  # Validate parameters
-  if halvingsCount < 0:
-    echo "Error: Halvings must be a non-negative integer"
-    quit(1)
+  let halvingsCount = 1
 
   try:
     # Load the master image (screenshot)
