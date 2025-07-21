@@ -23,7 +23,7 @@ jobs:
         export PATH="$HOME/.nimble/bin:$PATH"
         export PATH="$HOME/.local/share/grabnim/current/bin:$PATH"
 
-        grabnim
+        grabnim 2.2.x
 
         echo "$HOME/.local/share/grabnim/current/bin" >> $GITHUB_PATH
         echo "$HOME/.nimble/bin" >> $GITHUB_PATH
