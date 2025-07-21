@@ -13,7 +13,7 @@ A high-performance image comparison and sub-image finding library for Nim, built
 
 ## Performance
 
-Diffy includes hand-optimized SIMD implementations that provide dramatic performance improvements:
+Diffy includes optimized SIMD implementations that provide dramatic performance improvements:
 
 | Architecture | Implementation | Performance | Baseline | Speedup |
 |-------------|---------------|-------------|-------------|----------|
