@@ -7,42 +7,41 @@
 
 import std/strutils
 import unittest
+import nimbench
 
 import diffy
 
-test "can find":
+bench(diffyFind3):
 
   let masterImagePath = "tests/data/settings.png"
   let targetImagePath = "tests/data/transfer_button.png"
 
-  let halvingsCount = 1
+  let halvingsCount = 3
 
-  try:
-    # Load the master image (screenshot)
-    let masterImage = readImage(masterImagePath)
-    echo "Master image loaded: ", masterImage.width, "x", masterImage.height
+  # Load the master image (screenshot)
+  let masterImage = readImage(masterImagePath)
+  echo "Master image loaded: ", masterImage.width, "x", masterImage.height
 
-    # Load the image to find (UI element)
-    let targetImage = readImage(targetImagePath)
-    echo "Target image loaded: ", targetImage.width, "x", targetImage.height
+  # Load the image to find (UI element)
+  let targetImage = readImage(targetImagePath)
+  echo "Target image loaded: ", targetImage.width, "x", targetImage.height
 
-    # Find the target image in the master image
-    echo "Searching for target image in master image..."
-    echo "  Halvings: ", halvingsCount
+  # Find the target image in the master image
+  echo "Searching for target image in master image..."
+  echo "  Halvings: ", halvingsCount
 
-    let (confidence, position) = findImg(masterImage, targetImage, halvingsCount)
+  let (confidence, position) = findImg(masterImage, targetImage, halvingsCount)
 
-    echo ""
-    echo "Results:"
-    echo "  Confidence: ", confidence.formatFloat(ffDecimal, 2), "%"
-    echo "  Position: (", position[0], ", ", position[1], ")"
+  echo ""
+  echo "Results:"
+  echo "  Confidence: ", confidence.formatFloat(ffDecimal, 2), "%"
+  echo "  Position: (", position[0], ", ", position[1], ")"
 
-    if confidence >= 80.0:
-      echo "  Status: FOUND! Good match detected."
-    elif confidence >= 60.0:
-      echo "  Status: Possible match found."
-    else:
-      echo "  Status: No good match found."
-  except CatchableError as e:
-    echo "Error: ", e.msg
-    quit(1)
+  if confidence >= 80.0:
+    echo "  Status: FOUND! Good match detected."
+  elif confidence >= 60.0:
+    echo "  Status: Possible match found."
+  else:
+    echo "  Status: No good match found."
+
+runBenchmarks()
