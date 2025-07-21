@@ -2,12 +2,14 @@ import pixie
 import pixie/images
 import os
 
+import diffy/simd
+
 {.push checks: off.}
 {.push stackTrace: off.}
 
 export readImage
 
-proc diffAt*(master, image: Image, startX, startY: int): float32 {.raises: [].} =
+proc diffAt*(master, image: Image, startX, startY: int): float32 {.hasSimd, raises: [].} =
   ## Calculates the similarity score between the target image and master image at the given position.
   ## Returns a similarity score from 0-100 where 100 is a perfect match.
   var
