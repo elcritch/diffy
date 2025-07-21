@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.1.0"
+version       = "0.1.1"
 author        = "Jaremy Creechley"
 description   = "Simple diff and sub-image finder with SIMD based on Pixie"
 license       = "Apache-2.0"
