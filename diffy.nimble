@@ -2,7 +2,7 @@
 
 version       = "0.1.0"
 author        = "Jaremy Creechley"
-description   = "Simple diff and sub-image finder based on Pixie"
+description   = "Simple diff and sub-image finder with SIMD based on Pixie"
 license       = "Apache-2.0"
 srcDir        = "src"
 
