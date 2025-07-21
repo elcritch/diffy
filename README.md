@@ -27,7 +27,7 @@ Diffy includes hand-optimized SIMD implementations that provide dramatic perform
 Add diffy to your `.nimble` file:
 
 ```nimble
-requires "diffy >= 0.1.0"
+requires "https://github.com/elcritch/diffy >= 0.1.0"
 ```
 
 Or install directly:
