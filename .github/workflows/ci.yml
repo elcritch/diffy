@@ -13,12 +13,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         nim-version: ['stable']
-        exclude:
-          # Exclude some combinations to reduce CI time
-          - os: windows-latest
-            nim-version: devel
-          - os: macos-latest
-            nim-version: devel
 
     steps:
     - uses: actions/checkout@v4
