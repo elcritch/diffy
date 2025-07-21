@@ -30,6 +30,8 @@ proc diffAt*(master, image: Image, startX, startY: int): float32 {.hasSimd, rais
   # Calculate similarity score (higher is better, 100 = perfect match)
   100.0 * (1.0 - diffScore.float32 / diffTotal.float32)
 
+{.pop.}
+
 proc findImg*(
     master, image: Image,
     halvings: int = 0,

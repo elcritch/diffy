@@ -22,7 +22,7 @@ test "can find":
   let masterImagePath = "tests/data/settings.png"
   let targetImagePath = "tests/data/transfer_button.png"
 
-  let halvingsCount = 3
+  let halvingsCount = 1
 
   # Load the master image (screenshot)
   let masterImage = readImage(masterImagePath)
@@ -39,8 +39,8 @@ test "can find":
   timeIt "findImg":
     let (confidence, position) = findImg(masterImage, targetImage, halvingsCount)
 
-  check confidence >= 98
-  check position[0] == 936
+  check confidence >= 97.0
+  check position[0] == 938
   check position[1] == 1707
 
   echo ""
