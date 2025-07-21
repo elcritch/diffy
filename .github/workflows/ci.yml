@@ -11,8 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # os: [ubuntu-latest, macos-latest]
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macos-latest]
 
     steps:
     - uses: actions/checkout@v4
@@ -21,18 +20,13 @@ jobs:
       run: |
         wget https://codeberg.org/janAkali/grabnim/raw/branch/master/misc/install.sh
         sh install.sh
-        export PATH="/home/runner/.nimble/bin:$PATH"
-        export PATH="/home/runner/.local/share/grabnim/current/bin:$PATH"
+        export PATH="$HOME/.nimble/bin:$PATH"
+        export PATH="$HOME/.local/share/grabnim/current/bin:$PATH"
 
         grabnim 2.2.4
 
-        echo "FIND NIMBLE"
-        find /home/runner/.nimble/
-        echo "FIND LOCAL"
-        find /home/runner/.local/
-
-        echo "/home/runner/.local/share/grabnim/current/bin" >> $GITHUB_PATH
-        echo "/home/runner/.nimble/bin" >> $GITHUB_PATH
+        echo "$HOME/.local/share/grabnim/current/bin" >> $GITHUB_PATH
+        echo "$HOME/.nimble/bin" >> $GITHUB_PATH
 
     - name: Install Atlas
       run: |
