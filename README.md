@@ -150,31 +150,6 @@ else:
   echo "Login button not found"
 ```
 
-### Batch Processing
-
-```nim
-import diffy, times
-
-proc findAllIcons(screenshot: Image, iconPaths: seq[string]): seq[(string, float32, (int, int))] =
-  var results: seq[(string, float32, (int, int))]
-  
-  for iconPath in iconPaths:
-    let icon = readImage(iconPath)
-    let (confidence, pos) = findImg(screenshot, icon, halvings = 1)
-    results.add((iconPath, confidence, pos))
-  
-  return results
-
-# Usage
-let screenshot = readImage("desktop.png")
-let icons = @["folder.png", "file.png", "trash.png"]
-let results = findAllIcons(screenshot, icons)
-
-for (name, conf, pos) in results:
-  if conf >= 80.0:
-    echo name, " found at (", pos[0], ", ", pos[1], ") - ", conf, "%"
-```
-
 ## Performance Tuning
 
 ### Halving Strategy
@@ -182,9 +157,9 @@ for (name, conf, pos) in results:
 The `halvings` parameter is crucial for performance:
 
 - `halvings = 0`: Full resolution, highest accuracy, slowest
-- `halvings = 1`: Half resolution, good balance
+- `halvings = 1`: Half resolution, good balance and usually accurate
 - `halvings = 2`: Quarter resolution, faster but less precise
-- `halvings = 3+`: Very fast but may miss small details
+- `halvings = 3+`: Very fast but may confuse smaller images
 
 ### Search Area Limiting
 
