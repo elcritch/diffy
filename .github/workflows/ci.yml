@@ -24,9 +24,12 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Setup Nim
-      uses: iffy/install-nim@v5
-      with:
-        version: ${{ matrix.nim-version }}
+      run: |
+        wget https://codeberg.org/janAkali/grabnim/raw/branch/master/misc/install.sh
+        sh install.sh
+        echo "$HOME/.local/share/grabnim/current/bin" >> $GITHUB_PATH
+        echo "$HOME/.nimble/bin" >> $GITHUB_PATH
+        nim --version
 
     - name: Install Atlas
       run: |
