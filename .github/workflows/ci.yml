@@ -23,8 +23,14 @@ jobs:
         sh install.sh
         export PATH="/home/runner/.nimble/bin:$PATH"
         export PATH="/home/runner/.local/share/grabnim/current/bin:$PATH"
-        echo "NIM VERSION"
-        nim --version
+
+        grabnim install 2.2.x
+
+        echo "FIND NIMBLE"
+        find /home/runner/.nimble/
+        echo "FIND LOCAL"
+        find /home/runner/.local/
+
         echo "/home/runner/.local/share/grabnim/current/bin" >> $GITHUB_PATH
         echo "/home/runner/.nimble/bin" >> $GITHUB_PATH
 
