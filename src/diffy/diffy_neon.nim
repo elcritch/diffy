@@ -1,5 +1,7 @@
 import nimsimd/hassimd, nimsimd/neon, pixie, pixie/images, pixie/common
 
+{.push stackTrace: off.}
+
 when defined(release):
   {.push checks: off.}
 
@@ -84,6 +86,3 @@ proc diffAtNeon*(master, image: Image, startX, startY: int): float32 {.simd.} =
     return 100.0
   else:
     return 100.0 * (1.0 - diffScore.float32 / diffTotal.float32)
-
-when defined(release):
-  {.pop.}
