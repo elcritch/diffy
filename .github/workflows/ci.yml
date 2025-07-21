@@ -21,14 +21,12 @@ jobs:
       run: |
         wget https://codeberg.org/janAkali/grabnim/raw/branch/master/misc/install.sh
         sh install.sh
+        export PATH="/home/runner/.nimble/bin:$PATH"
         export PATH="/home/runner/.local/share/grabnim/current/bin:$PATH"
-        echo "FIND NIMBLE"
-        find /home/runner/.nimble/
-        echo "FIND LOCAL"
-        find /home/runner/.local/
         echo "NIM VERSION"
         nim --version
         echo "/home/runner/.local/share/grabnim/current/bin" >> $GITHUB_PATH
+        echo "/home/runner/.nimble/bin" >> $GITHUB_PATH
 
     - name: Install Atlas
       run: |
