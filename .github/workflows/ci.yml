@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        nim-version: ['stable']
+        exclude:
+          # Exclude some combinations to reduce CI time
+          - os: windows-latest
+            nim-version: devel
+          - os: macos-latest
+            nim-version: devel
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Nim
+      uses: iffy/install-nim@v5
+      with:
+        version: ${{ matrix.nim-version }}
+
+    - name: Install Atlas
+      run: |
+        git clone https://github.com/nim-lang/atlas.git
+        cd atlas
+        nim buildRelease
+        cd ../
+
+    - name: Install dependencies
+      run: ./atlas/atlas install --feature:test
+
+    - name: Run tests
+      run: nim test
