@@ -17,11 +17,12 @@ Diffy includes hand-optimized SIMD implementations that provide dramatic perform
 
 | Architecture | Implementation | Performance | Speedup |
 |-------------|---------------|-------------|----------|
-| ARM64 | NEON SIMD | **759ms** | **10x faster** |
-| x86-64 | SSE2 SIMD | **976ms** | **10x faster** |
-| Any | Scalar fallback | ~10,000ms | baseline |
+| ARM64 | NEON SIMD | **759ms** | **7.6x faster** |
+| x86-64 | SSE2 SIMD | **976ms** | **5.9x faster** |
+| Any | Scalar fallback | **5835ms** | baseline |
 
 *Benchmark: Finding a 944×103 UI element in a 1440×2046 screenshot with 1 halving*
+*Note: the x86-64 sse2 version was run on a macbook m3 using rosetta2, it'll likely be faster on a native amd64 machine*
 
 ## Installation
 
@@ -34,7 +35,8 @@ requires "diffy >= 0.1.0"
 Or install directly:
 
 ```bash
-nimble install diffy
+atlas use https://github.com/elcritch/diffy.git
+nimble install https://github.com/elcritch/diffy.git
 ```
 
 ## Quick Start
