@@ -6,12 +6,18 @@
 # To run these tests, simply execute `nimble test`.
 
 import std/strutils
+import std/[times, monotimes]
 import unittest
-import nimbench
 
 import diffy
 
-bench(diffyFind3):
+template timeIt(name: string, body: untyped) =
+  let start = getMonoTime()
+  body
+  let stop = getMonoTime()
+  echo name, " took ", (stop - start).inMilliseconds, "ms"
+
+test "can find":
 
   let masterImagePath = "tests/data/settings.png"
   let targetImagePath = "tests/data/transfer_button.png"
@@ -30,7 +36,8 @@ bench(diffyFind3):
   echo "Searching for target image in master image..."
   echo "  Halvings: ", halvingsCount
 
-  let (confidence, position) = findImg(masterImage, targetImage, halvingsCount)
+  timeIt "findImg":
+    let (confidence, position) = findImg(masterImage, targetImage, halvingsCount)
 
   echo ""
   echo "Results:"
@@ -43,5 +50,3 @@ bench(diffyFind3):
     echo "  Status: Possible match found."
   else:
     echo "  Status: No good match found."
-
-runBenchmarks()
