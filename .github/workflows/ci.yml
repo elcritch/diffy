@@ -28,6 +28,7 @@ jobs:
         wget https://codeberg.org/janAkali/grabnim/raw/branch/master/misc/install.sh
         sh install.sh
         export PATH="/home/runner/.local/share/grabnim/current/bin:$PATH"
+        find /home/runner/.local/share/grabnim/
         nim --version
         echo "/home/runner/.local/share/grabnim/current/bin" >> $GITHUB_PATH
 
