@@ -39,6 +39,10 @@ test "can find":
   timeIt "findImg":
     let (confidence, position) = findImg(masterImage, targetImage, halvingsCount)
 
+  check confidence >= 99.6
+  check position[0] == 936
+  check position[1] == 1707
+
   echo ""
   echo "Results:"
   echo "  Confidence: ", confidence.formatFloat(ffDecimal, 2), "%"
