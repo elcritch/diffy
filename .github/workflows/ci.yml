@@ -29,10 +29,10 @@ jobs:
         sh install.sh
         echo "$HOME/.local/share/grabnim/current/bin" >> $GITHUB_PATH
         echo "$HOME/.nimble/bin" >> $GITHUB_PATH
-        nim --version
 
     - name: Install Atlas
       run: |
+        nim --version
         git clone https://github.com/nim-lang/atlas.git
         cd atlas
         nim buildRelease
