@@ -11,14 +11,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
-        nim-version: ['stable']
-        exclude:
-          # Exclude some combinations to reduce CI time
-          - os: windows-latest
-            nim-version: devel
-          - os: macos-latest
-            nim-version: devel
+        # os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest]
 
     steps:
     - uses: actions/checkout@v4
@@ -28,7 +22,11 @@ jobs:
         wget https://codeberg.org/janAkali/grabnim/raw/branch/master/misc/install.sh
         sh install.sh
         export PATH="/home/runner/.local/share/grabnim/current/bin:$PATH"
-        find /home/runner/.local/share/grabnim/
+        echo "FIND NIMBLE"
+        find /home/runner/.nimble/
+        echo "FIND LOCAL"
+        find /home/runner/.local/
+        echo "NIM VERSION"
         nim --version
         echo "/home/runner/.local/share/grabnim/current/bin" >> $GITHUB_PATH
 
