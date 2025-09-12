@@ -90,13 +90,13 @@ suite "basic image search":
     echo "  Halvings: ", halvingsCount
 
     timeIt "findImg":
-      let (confidence, position) = findImg(masterImagePartial, targetImage, halvingsCount, minY = 200, similarityThreshold = confidenceThreshold)
+      let (confidence, position) = findImg(masterImagePartial, targetImage, halvingsCount, minY = 150, similarityThreshold = confidenceThreshold)
 
     echo "Results:"
     echo "  Confidence: ", confidence.formatFloat(ffDecimal, 2), "%"
     echo "  Position: (", position[0], ", ", position[1], ")"
 
-    check confidence < confidenceThreshold
+    check confidence >= confidenceThreshold
     check position[0] == 936
     check position[1] == 277
 

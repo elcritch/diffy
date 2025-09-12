@@ -37,6 +37,7 @@ proc findImg*(
     halvings: int = 0,
     centerResult = true,
     similarityThreshold: float32 = 99.0,
+    minY: int = 0,
     maxX: int = int.high,
     maxY: int = int.high,
 ): (float32, (int, int)) {.raises: [PixieError].} =
@@ -66,7 +67,18 @@ proc findImg*(
 
   # Search through all possible positions in master where image could fit
   block search:
-    for startY in 0 .. (masterToUse.height - imageToUse.height):
+    let minStartY =
+      block:
+        var y = minY
+        if y < 0: y = 0
+        # Convert requested minY (original scale) to current scaled search space
+        y = y div scaleFactor
+        # Ensure we don't start past the last valid row
+        let maxStart = max(0, masterToUse.height - imageToUse.height)
+        if y > maxStart: y = maxStart
+        y
+
+    for startY in minStartY .. (masterToUse.height - imageToUse.height):
       for startX in 0 .. (masterToUse.width - imageToUse.width):
         let similarity = diffAt(masterToUse, imageToUse, startX, startY)
 
