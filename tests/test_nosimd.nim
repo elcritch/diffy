@@ -67,13 +67,12 @@ suite "basic image search":
     let confidenceThreshold = 99.0
 
     # Find the target image in the master image
-    echo "Searching for target image in master image..."
+    echo "Searching for target image in master image partial..."
     echo "  Halvings: ", halvingsCount
 
     timeIt "findImg":
-      let (confidence, position) = findImg(masterImagePartial, targetImage, halvingsCount, maxY = 1000, similarityThreshold = confidenceThreshold)
+      let (confidence, position) = findImg(masterImagePartial, targetImage, halvingsCount, maxY = 300, similarityThreshold = confidenceThreshold)
 
-    echo ""
     echo "Results:"
     echo "  Confidence: ", confidence.formatFloat(ffDecimal, 2), "%"
     echo "  Position: (", position[0], ", ", position[1], ")"
@@ -82,9 +81,21 @@ suite "basic image search":
     check position[0] == 936
     check position[1] == 277
 
-    if confidence >= 80.0:
-      echo "  Status: FOUND! Good match detected."
-    elif confidence >= 60.0:
-      echo "  Status: Possible match found."
-    else:
-      echo "  Status: No good match found."
+  test "cannot find with maxY":
+    let halvingsCount = 1
+    let confidenceThreshold = 99.0
+
+    # Find the target image in the master image
+    echo "Searching for target image in master image partial..."
+    echo "  Halvings: ", halvingsCount
+
+    timeIt "findImg":
+      let (confidence, position) = findImg(masterImagePartial, targetImage, halvingsCount, maxY = 200, similarityThreshold = confidenceThreshold)
+
+    echo "Results:"
+    echo "  Confidence: ", confidence.formatFloat(ffDecimal, 2), "%"
+    echo "  Position: (", position[0], ", ", position[1], ")"
+
+    check confidence < confidenceThreshold
+    check position[0] == 938
+    check position[1] == 173
