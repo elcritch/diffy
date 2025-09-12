@@ -44,7 +44,7 @@ suite "basic image search":
       echo "  Halvings: ", halvingsCount
 
       timeIt "findImg":
-        let (confidence, position) = findImg(masterImage, targetImage, halvingsCount)
+        let (confidence, position) = findImg(masterImagg, targetImage, halvingsCount)
 
       check confidence >= 98.0
       check position[0] == 936
