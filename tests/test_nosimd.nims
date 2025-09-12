@@ -1,1 +1,2 @@
 --define:diffyNoSimd
+--define:release
