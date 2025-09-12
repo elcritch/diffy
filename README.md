@@ -167,12 +167,24 @@ The `halvings` parameter is crucial for performance:
 Restrict search areas when you know approximate locations:
 
 ```nim
-# Only search in the top-right quadrant
+# Only search in the top-left quadrant
 let (confidence, pos) = findImg(screenshot, icon,
   maxX = screenshot.width div 2,
   maxY = screenshot.height div 2
 )
 ```
+
+Or with mins:
+
+```nim
+# Only search in the bottom-right quadrant
+let (confidence, pos) = findImg(screenshot, icon,
+  minX = screenshot.width div 2,
+  minY = screenshot.height div 2
+)
+```
+
+These can be combined.
 
 ## SIMD Optimizations
 
