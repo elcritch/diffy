@@ -37,6 +37,7 @@ proc findImg*(
     halvings: int = 0,
     centerResult = true,
     similarityThreshold: float32 = 99.0,
+    minX: int = 0,
     minY: int = 0,
     maxX: int = int.high,
     maxY: int = int.high,
@@ -78,8 +79,19 @@ proc findImg*(
         if y > maxStart: y = maxStart
         y
 
+    let minStartX =
+      block:
+        var x = minX
+        if x < 0: x = 0
+        # Convert requested minX (original scale) to current scaled search space
+        x = x div scaleFactor
+        # Ensure we don't start past the last valid column
+        let maxStart = max(0, masterToUse.width - imageToUse.width)
+        if x > maxStart: x = maxStart
+        x
+
     for startY in minStartY .. (masterToUse.height - imageToUse.height):
-      for startX in 0 .. (masterToUse.width - imageToUse.width):
+      for startX in minStartX .. (masterToUse.width - imageToUse.width):
         let similarity = diffAt(masterToUse, imageToUse, startX, startY)
 
         let scaledX = startX * scaleFactor

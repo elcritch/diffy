@@ -100,6 +100,25 @@ suite "basic image search":
     check position[0] == 936
     check position[1] == 277
 
+  test "can find with minX":
+    let halvingsCount = 1
+    let confidenceThreshold = 99.0
+
+    # Find the target image in the master image
+    echo "Searching for target image in master image partial..."
+    echo "  Halvings: ", halvingsCount
+
+    timeIt "findImg":
+      let (confidence, position) = findImg(masterImagePartial, targetImage, halvingsCount, minX = 300, similarityThreshold = confidenceThreshold)
+
+    echo "Results:"
+    echo "  Confidence: ", confidence.formatFloat(ffDecimal, 2), "%"
+    echo "  Position: (", position[0], ", ", position[1], ")"
+
+    check confidence >= confidenceThreshold
+    check position[0] == 936
+    check position[1] == 277
+
   test "cannot find with maxY":
     let halvingsCount = 1
     let confidenceThreshold = 99.0
