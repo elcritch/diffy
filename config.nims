@@ -1,3 +1,4 @@
+switch("nimcache", "nimcache")
 
 task test, "Run tests":
   exec "nim c tests/test_simd.nim"
