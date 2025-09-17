@@ -9,6 +9,8 @@ import std/strutils
 import std/[times, monotimes]
 import unittest
 
+import pixie
+
 import diffy
 
 template timeIt(name: string, body: untyped) =
@@ -34,6 +36,16 @@ let targetImage = readImage(targetImagePath)
 echo "Target image loaded: ", targetImage.width, "x", targetImage.height
 
 suite "basic image search":
+
+  test "startCenter prioritizes central match":
+    let master = newImage(4, 4)
+    let target = newImage(2, 2)
+
+    let (_, posDefault) = findImg(master, target, centerResult = false, startCenter = false)
+    let (_, posCentered) = findImg(master, target, centerResult = false, startCenter = true)
+
+    check posDefault == (0, 0)
+    check posCentered == (1, 1)
 
   test "can find":
     when false:

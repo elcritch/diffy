@@ -105,6 +105,7 @@ proc findImg*(
     master, image: Image,
     halvings: Natural = 0,
     centerResult = true,
+    startCenter = true,
     similarityThreshold: float32 = 99.0,
     minX: int = 0,
     minY: int = 0,
@@ -114,7 +115,8 @@ proc findImg*(
   ## Finds the best match of 'image' within 'master' image.
   ## Returns the confidence score (0-100) and the position (x, y) of the best match.
   ## The halvings parameter specifies how many times to reduce image sizes by half using minifyBy2().
-  ## 0 = no reduction, 1 = half size, 2 = quarter size, etc.
+  ## 0 = no reduction, 1 = half size, 2 = quarter size, etc. When startCenter is true,
+  ## candidate positions are tested beginning from the central offset and expanding outwards.
 
   var
     masterToUse = master
@@ -145,6 +147,7 @@ proc findImg*(
         minY=minY,
         maxX=maxX,
         maxY=maxY,
+        centerOutwards=startCenter,
       ):
       let similarity = diffAt(masterToUse, imageToUse, pos.x, pos.y)
 
