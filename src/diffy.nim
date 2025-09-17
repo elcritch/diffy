@@ -11,7 +11,7 @@ export readImage
 
 iterator diffPositions*(
     master, image: Image,
-    scaleFactor: Natural,
+    scaleFactor: Positive,
     minX, minY: int,
     maxX, maxY: int,
     centerOutwards = false

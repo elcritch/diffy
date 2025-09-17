@@ -34,6 +34,12 @@ suite "diffPositions iterator":
     check positions[0] == (0, 0, 0, 0)
     check positions[^1] == (3, 2, 3, 2)
 
+  test "respects default bounds":
+    let positions = gatherPositions((5, 4), (2, 2), scaleFactor=1, 0, 0, int.high, int.high)
+    check positions.len == 12
+    check positions[0] == (0, 0, 0, 0)
+    check positions[^1] == (3, 2, 3, 2)
+
   test "clamps minimums and scales coordinates":
     let positions = gatherPositions((10, 8), (4, 4), scaleFactor=2, 5, 4, int.high, int.high)
     check positions.len == 15
