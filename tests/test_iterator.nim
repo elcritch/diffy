@@ -80,4 +80,13 @@ test "can iterate from center outwards":
     check positions[8].start ==  (3, 3)
     check positions[9].start ==  (0, 0)
 
+    check positions[^2].scaled == (3, 4)
     check positions[^1].scaled == (4, 4)
+
+    ## 
+    ##  9  10  11  12   13
+    ## 14   1   2   3   15
+    ## 16   4   0   5   17
+    ## 18   6   7   8   19
+    ## 20  21  22  23   24
+    ## 
