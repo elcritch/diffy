@@ -68,27 +68,13 @@ proc findImg*(
 
   # Search through all possible positions in master where image could fit
   block search:
-    let minStartY =
-      block:
-        var y = minY
-        if y < 0: y = 0
-        # Convert requested minY (original scale) to current scaled search space
-        y = y div scaleFactor
-        # Ensure we don't start past the last valid row
-        let maxStart = max(0, masterToUse.height - imageToUse.height)
-        if y > maxStart: y = maxStart
-        y
+    let minX = minX.max(0)
+    let minY = minY.max(0)
+    let maxStartHeight = max(masterToUse.height - imageToUse.height, 0)
+    let maxStartWidth = max(masterToUse.width - imageToUse.width, 0)
 
-    let minStartX =
-      block:
-        var x = minX
-        if x < 0: x = 0
-        # Convert requested minX (original scale) to current scaled search space
-        x = x div scaleFactor
-        # Ensure we don't start past the last valid column
-        let maxStart = max(0, masterToUse.width - imageToUse.width)
-        if x > maxStart: x = maxStart
-        x
+    let minStartY = min(minY div scaleFactor, maxStartHeight)
+    let minStartX = min(minX div scaleFactor, maxStartWidth)
 
     for startY in minStartY .. (masterToUse.height - imageToUse.height):
       for startX in minStartX .. (masterToUse.width - imageToUse.width):
