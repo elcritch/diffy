@@ -9,7 +9,7 @@ import diffy/simd
 
 export readImage
 
-iterator startPositions*(
+iterator diffPositions*(
     master, image: Image,
     scaleFactor: Natural,
     minX, minY: int,
@@ -109,14 +109,14 @@ proc findImg*(
 
   # Search through all possible positions in master where image could fit
   block search:
-    for (startX, startY, scaledX, scaledY) in startPositions(
+    for (startX, startY, scaledX, scaledY) in diffPositions(
         masterToUse,
         imageToUse,
-        scaleFactor,
-        minX,
-        minY,
-        maxX,
-        maxY,
+        scaleFactor=scaleFactor,
+        minX=minX,
+        minY=minY,
+        maxX=maxX,
+        maxY=maxY,
       ):
       let similarity = diffAt(masterToUse, imageToUse, startX, startY)
 

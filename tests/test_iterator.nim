@@ -14,7 +14,7 @@ proc gatherPositions(masterSize, imageSize: (int, int), scaleFactor: int,
   let master = newImage(masterSize[0], masterSize[1])
   let image = newImage(imageSize[0], imageSize[1])
 
-  toSeq startPositions(
+  toSeq diffPositions(
         master,
         image,
         scaleFactor,
@@ -24,7 +24,7 @@ proc gatherPositions(masterSize, imageSize: (int, int), scaleFactor: int,
         maxY,
       )
 
-suite "startPositions iterator":
+suite "diffPositions iterator":
 
   test "respects default bounds":
     let positions = gatherPositions((5, 4), (2, 2), 1, 0, 0, int.high, int.high)
