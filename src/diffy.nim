@@ -13,12 +13,14 @@ iterator diffPositions*(
     master, image: Image,
     scaleFactor: Natural,
     minX, minY: int,
-    maxX, maxY: int
+    maxX, maxY: int,
+    centerOutwards = false
 ): tuple[startX, startY, scaledX, scaledY: int] =
   ## Generates the (startX, startY) offsets to check when matching an image.
   ## Returns both the scaled and unscaled coordinates so callers can avoid
   ## recomputing them. The iterator respects the optional min/max constraints
-  ## and clamps them to the bounds of the provided images.
+  ## and clamps them to the bounds of the provided images. When centerOutwards
+  ## is true, it begins at the central offset and expands outward.
 
   let clampedMinX = minX.max(0)
   let clampedMinY = minY.max(0)
@@ -43,6 +45,32 @@ iterator diffPositions*(
 
   if minStartX > maxStartX or minStartY > maxStartY:
     discard
+  elif centerOutwards:
+    let
+      totalPositions = (maxStartX - minStartX + 1) * (maxStartY - minStartY + 1)
+      centerStartX = (minStartX + maxStartX) div 2
+      centerStartY = (minStartY + maxStartY) div 2
+
+    var
+      yielded = 0
+      radius = 0
+
+    while yielded < totalPositions:
+      let
+        radiusMinX = max(centerStartX - radius, minStartX)
+        radiusMaxX = min(centerStartX + radius, maxStartX)
+        radiusMinY = max(centerStartY - radius, minStartY)
+        radiusMaxY = min(centerStartY + radius, maxStartY)
+
+      for startY in radiusMinY .. radiusMaxY:
+        let scaledY = startY * scaleFactor
+        for startX in radiusMinX .. radiusMaxX:
+          if max(abs(startX - centerStartX), abs(startY - centerStartY)) == radius:
+            let scaledX = startX * scaleFactor
+            yield (startX, startY, scaledX, scaledY)
+            inc yielded
+
+      inc radius
   else:
     for startY in minStartY .. maxStartY:
       let scaledY = startY * scaleFactor
