@@ -65,3 +65,19 @@ suite "diffPositions iterator":
     check positions[2] ==  ((1, 0), (1, 0))
     check positions[3] ==  ((2, 0), (2, 0))
     check positions[^1] == ((3, 2), (3, 2))
+
+test "can iterate from center outwards":
+    let positions = gatherPositions((5, 4), (1, 1), scaleFactor=1, 0, 0, int.high, int.high, true)
+    check positions.len == 20
+    check positions[0].start ==  (2, 1)
+    check positions[1].start ==  (1, 0)
+    check positions[2].start ==  (2, 0)
+    check positions[3].start ==  (3, 0)
+    check positions[4].start ==  (1, 1)
+    check positions[5].start ==  (3, 1)
+    check positions[6].start ==  (1, 2)
+    check positions[7].start ==  (2, 2)
+    check positions[8].start ==  (3, 2)
+    check positions[9].start ==  (0, 0)
+
+    check positions[^1].scaled == (4, 3)
