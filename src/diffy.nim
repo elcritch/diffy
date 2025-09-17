@@ -9,6 +9,75 @@ import diffy/simd
 
 export readImage
 
+iterator diffPositions*(
+    master, image: Image,
+    scaleFactor: Positive,
+    minX, minY: int,
+    maxX, maxY: int,
+    centerOutwards = false
+): tuple[start: tuple[x, y: int], scaled: tuple[x, y: int]] =
+  ## Generates the (startX, startY) offsets to check when matching an image.
+  ## Returns both the scaled and unscaled coordinates so callers can avoid
+  ## recomputing them. The iterator respects the optional min/max constraints
+  ## and clamps them to the bounds of the provided images. When centerOutwards
+  ## is true, it begins at the central offset and expands outward.
+
+  let clampedMinX = minX.max(0)
+  let clampedMinY = minY.max(0)
+
+  let maxStartWidth = max(master.width - image.width, 0)
+  let maxStartHeight = max(master.height - image.height, 0)
+
+  let minStartX = min(clampedMinX div scaleFactor, maxStartWidth)
+  let minStartY = min(clampedMinY div scaleFactor, maxStartHeight)
+
+  let maxStartX =
+    if maxX == int.high:
+      maxStartWidth
+    else:
+      min(max(maxX div scaleFactor, 0), maxStartWidth)
+
+  let maxStartY =
+    if maxY == int.high:
+      maxStartHeight
+    else:
+      min(max(maxY div scaleFactor, 0), maxStartHeight)
+
+  if minStartX > maxStartX or minStartY > maxStartY:
+    discard
+  elif centerOutwards:
+    let
+      totalPositions = (maxStartX - minStartX + 1) * (maxStartY - minStartY + 1)
+      centerStartX = (minStartX + maxStartX) div 2
+      centerStartY = (minStartY + maxStartY) div 2
+
+    var
+      yielded = 0
+      radius = 0
+
+    while yielded < totalPositions:
+      let
+        radiusMinX = max(centerStartX - radius, minStartX)
+        radiusMaxX = min(centerStartX + radius, maxStartX)
+        radiusMinY = max(centerStartY - radius, minStartY)
+        radiusMaxY = min(centerStartY + radius, maxStartY)
+
+      for startY in radiusMinY .. radiusMaxY:
+        let scaledY = startY * scaleFactor
+        for startX in radiusMinX .. radiusMaxX:
+          if max(abs(startX - centerStartX), abs(startY - centerStartY)) == radius:
+            let scaledX = startX * scaleFactor
+            yield ((startX, startY), (scaledX, scaledY))
+            inc yielded
+
+      inc radius
+  else:
+    for startY in minStartY .. maxStartY:
+      let scaledY = startY * scaleFactor
+      for startX in minStartX .. maxStartX:
+        let scaledX = startX * scaleFactor
+        yield ((startX, startY), (scaledX, scaledY))
+
 proc diffAt*(master, image: Image, startX, startY: int): float32 {.hasSimd, raises: [].} =
   ## Calculates the similarity score between the target image and master image at the given position.
   ## Returns a similarity score from 0-100 where 100 is a perfect match.
@@ -34,8 +103,9 @@ proc diffAt*(master, image: Image, startX, startY: int): float32 {.hasSimd, rais
 
 proc findImg*(
     master, image: Image,
-    halvings: int = 0,
+    halvings: Natural = 0,
     centerResult = true,
+    startCenter = true,
     similarityThreshold: float32 = 99.0,
     minX: int = 0,
     minY: int = 0,
@@ -45,7 +115,8 @@ proc findImg*(
   ## Finds the best match of 'image' within 'master' image.
   ## Returns the confidence score (0-100) and the position (x, y) of the best match.
   ## The halvings parameter specifies how many times to reduce image sizes by half using minifyBy2().
-  ## 0 = no reduction, 1 = half size, 2 = quarter size, etc.
+  ## 0 = no reduction, 1 = half size, 2 = quarter size, etc. When startCenter is true,
+  ## candidate positions are tested beginning from the central offset and expanding outwards.
 
   var
     masterToUse = master
@@ -68,48 +139,26 @@ proc findImg*(
 
   # Search through all possible positions in master where image could fit
   block search:
-    let minStartY =
-      block:
-        var y = minY
-        if y < 0: y = 0
-        # Convert requested minY (original scale) to current scaled search space
-        y = y div scaleFactor
-        # Ensure we don't start past the last valid row
-        let maxStart = max(0, masterToUse.height - imageToUse.height)
-        if y > maxStart: y = maxStart
-        y
+    for (pos, scaled) in diffPositions(
+        masterToUse,
+        imageToUse,
+        scaleFactor=scaleFactor,
+        minX=minX,
+        minY=minY,
+        maxX=maxX,
+        maxY=maxY,
+        centerOutwards=startCenter,
+      ):
+      let similarity = diffAt(masterToUse, imageToUse, pos.x, pos.y)
 
-    let minStartX =
-      block:
-        var x = minX
-        if x < 0: x = 0
-        # Convert requested minX (original scale) to current scaled search space
-        x = x div scaleFactor
-        # Ensure we don't start past the last valid column
-        let maxStart = max(0, masterToUse.width - imageToUse.width)
-        if x > maxStart: x = maxStart
-        x
+      if similarity > bestScore:
+        bestScore = similarity
+        # Scale the position back to original size
+        bestPos = (scaled.x, scaled.y)
 
-    for startY in minStartY .. (masterToUse.height - imageToUse.height):
-      for startX in minStartX .. (masterToUse.width - imageToUse.width):
-        let similarity = diffAt(masterToUse, imageToUse, startX, startY)
-
-        let scaledX = startX * scaleFactor
-        let scaledY = startY * scaleFactor
-
-        if similarity > bestScore:
-          bestScore = similarity
-          # Scale the position back to original size
-          bestPos = (scaledX, scaledY)
-
-          # Early exit if we found a perfect or very good match
-          if similarity >= similarityThreshold:
-            break search
-
-        if scaledY > maxY:
+        # Early exit if we found a perfect or very good match
+        if similarity >= similarityThreshold:
           break search
-        if scaledX > maxX:
-          continue
 
   if centerResult:
     let centerX = bestPos[0] + (image.width div 2)

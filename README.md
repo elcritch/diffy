@@ -64,6 +64,7 @@ proc findImg*(
   master, image: Image,
   halvings: int = 0,
   centerResult: bool = true,
+  startCenter: bool = true,
   similarityThreshold: float32 = 99.0,
   minX: int = 0,
   minY: int = 0,
@@ -79,6 +80,7 @@ Finds the best match of `image` within `master` image.
 - `image`: The smaller image to find
 - `halvings`: Number of times to reduce image sizes by half (0=full resolution, 1=half, 2=quarter, etc.)
 - `centerResult`: If `true`, returns center coordinates; if `false`, returns top-left coordinates
+- `startCenter`: If `true`, starts searching at the center of the image or bounding box searching in a spiral out fashion; if `false`, starts at top-left coordinates
 - `similarityThreshold`: Stop searching early if this confidence level is reached (0-100)
 - `minX`, `minY`: Start search at these coordinates to skip rows/columns above/left
 - `maxX`, `maxY`: Limit search area for performance
