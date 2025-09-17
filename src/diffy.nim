@@ -9,6 +9,47 @@ import diffy/simd
 
 export readImage
 
+iterator startPositions*(
+    master, image: Image,
+    scaleFactor: Natural,
+    minX, minY: int,
+    maxX, maxY: int
+): tuple[startX, startY, scaledX, scaledY: int] =
+  ## Generates the (startX, startY) offsets to check when matching an image.
+  ## Returns both the scaled and unscaled coordinates so callers can avoid
+  ## recomputing them. The iterator respects the optional min/max constraints
+  ## and clamps them to the bounds of the provided images.
+
+  let clampedMinX = minX.max(0)
+  let clampedMinY = minY.max(0)
+
+  let maxStartWidth = max(master.width - image.width, 0)
+  let maxStartHeight = max(master.height - image.height, 0)
+
+  let minStartX = min(clampedMinX div scaleFactor, maxStartWidth)
+  let minStartY = min(clampedMinY div scaleFactor, maxStartHeight)
+
+  let maxStartX =
+    if maxX == int.high:
+      maxStartWidth
+    else:
+      min(max(maxX div scaleFactor, 0), maxStartWidth)
+
+  let maxStartY =
+    if maxY == int.high:
+      maxStartHeight
+    else:
+      min(max(maxY div scaleFactor, 0), maxStartHeight)
+
+  if minStartX > maxStartX or minStartY > maxStartY:
+    discard
+  else:
+    for startY in minStartY .. maxStartY:
+      let scaledY = startY * scaleFactor
+      for startX in minStartX .. maxStartX:
+        let scaledX = startX * scaleFactor
+        yield (startX, startY, scaledX, scaledY)
+
 proc diffAt*(master, image: Image, startX, startY: int): float32 {.hasSimd, raises: [].} =
   ## Calculates the similarity score between the target image and master image at the given position.
   ## Returns a similarity score from 0-100 where 100 is a perfect match.
@@ -34,7 +75,7 @@ proc diffAt*(master, image: Image, startX, startY: int): float32 {.hasSimd, rais
 
 proc findImg*(
     master, image: Image,
-    halvings: int = 0,
+    halvings: Natural = 0,
     centerResult = true,
     similarityThreshold: float32 = 99.0,
     minX: int = 0,
@@ -68,34 +109,25 @@ proc findImg*(
 
   # Search through all possible positions in master where image could fit
   block search:
-    let minX = minX.max(0)
-    let minY = minY.max(0)
-    let maxStartHeight = max(masterToUse.height - imageToUse.height, 0)
-    let maxStartWidth = max(masterToUse.width - imageToUse.width, 0)
+    for (startX, startY, scaledX, scaledY) in startPositions(
+        masterToUse,
+        imageToUse,
+        scaleFactor,
+        minX,
+        minY,
+        maxX,
+        maxY,
+      ):
+      let similarity = diffAt(masterToUse, imageToUse, startX, startY)
 
-    let minStartY = min(minY div scaleFactor, maxStartHeight)
-    let minStartX = min(minX div scaleFactor, maxStartWidth)
+      if similarity > bestScore:
+        bestScore = similarity
+        # Scale the position back to original size
+        bestPos = (scaledX, scaledY)
 
-    for startY in minStartY .. (masterToUse.height - imageToUse.height):
-      for startX in minStartX .. (masterToUse.width - imageToUse.width):
-        let similarity = diffAt(masterToUse, imageToUse, startX, startY)
-
-        let scaledX = startX * scaleFactor
-        let scaledY = startY * scaleFactor
-
-        if similarity > bestScore:
-          bestScore = similarity
-          # Scale the position back to original size
-          bestPos = (scaledX, scaledY)
-
-          # Early exit if we found a perfect or very good match
-          if similarity >= similarityThreshold:
-            break search
-
-        if scaledY > maxY:
+        # Early exit if we found a perfect or very good match
+        if similarity >= similarityThreshold:
           break search
-        if scaledX > maxX:
-          continue
 
   if centerResult:
     let centerX = bestPos[0] + (image.width div 2)
