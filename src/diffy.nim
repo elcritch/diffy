@@ -15,7 +15,7 @@ iterator diffPositions*(
     minX, minY: int,
     maxX, maxY: int,
     centerOutwards = false
-): tuple[startX, startY, scaledX, scaledY: int] =
+): tuple[start: tuple[x, y: int], scaled: tuple[x, y: int]] =
   ## Generates the (startX, startY) offsets to check when matching an image.
   ## Returns both the scaled and unscaled coordinates so callers can avoid
   ## recomputing them. The iterator respects the optional min/max constraints
@@ -67,7 +67,7 @@ iterator diffPositions*(
         for startX in radiusMinX .. radiusMaxX:
           if max(abs(startX - centerStartX), abs(startY - centerStartY)) == radius:
             let scaledX = startX * scaleFactor
-            yield (startX, startY, scaledX, scaledY)
+            yield ((startX, startY), (scaledX, scaledY))
             inc yielded
 
       inc radius
@@ -76,7 +76,7 @@ iterator diffPositions*(
       let scaledY = startY * scaleFactor
       for startX in minStartX .. maxStartX:
         let scaledX = startX * scaleFactor
-        yield (startX, startY, scaledX, scaledY)
+        yield ((startX, startY), (scaledX, scaledY))
 
 proc diffAt*(master, image: Image, startX, startY: int): float32 {.hasSimd, raises: [].} =
   ## Calculates the similarity score between the target image and master image at the given position.
@@ -137,7 +137,7 @@ proc findImg*(
 
   # Search through all possible positions in master where image could fit
   block search:
-    for (startX, startY, scaledX, scaledY) in diffPositions(
+    for (pos, scaled) in diffPositions(
         masterToUse,
         imageToUse,
         scaleFactor=scaleFactor,
@@ -146,12 +146,12 @@ proc findImg*(
         maxX=maxX,
         maxY=maxY,
       ):
-      let similarity = diffAt(masterToUse, imageToUse, startX, startY)
+      let similarity = diffAt(masterToUse, imageToUse, pos.x, pos.y)
 
       if similarity > bestScore:
         bestScore = similarity
         # Scale the position back to original size
-        bestPos = (scaledX, scaledY)
+        bestPos = (scaled.x, scaled.y)
 
         # Early exit if we found a perfect or very good match
         if similarity >= similarityThreshold:
